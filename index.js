@@ -47,7 +47,7 @@ const authenticateJWT = (req, res, next)=> {
 connectDB();
 
 
-// all users get
+// its gettings all users
 app.get('/users',authenticateJWT,protectedRoute,index);
 
 // specific user get
