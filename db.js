@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try{
-        const dbURL = 'mongodb+srv://ikhlasafzaal13:liIVPrgeQRoUl9Jn@cluster0.xe3zt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+        const dbURL = 'mongodb+srv://Mubeen:Mubeen123@cluster0.te1hx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
         await mongoose.connect(dbURL,{useNewUrlParser: true, useUnifiedTopology:true})
         console.log('Connected to Mongoose Atlas');

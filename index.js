@@ -4,8 +4,9 @@ const connectDB = require('./db');
 const User = require('./models/User');
 const passport = require('passport');
 const session = require('express-session'); 
-const {index,getbyId,update,store,destroy, login, logout,protectedRoute} = require('./controllers/UserController')
+const {index,getbyId,update,store,destroy, login, logout,isTokenBlacklisted} = require('./controllers/UserController')
 const jwt = require('jsonwebtoken');
+
 
 
 const app = express();
@@ -48,7 +49,7 @@ connectDB();
 
 
 // its gettings all users
-app.get('/users',authenticateJWT,protectedRoute,index);
+app.get('/users',authenticateJWT,isTokenBlacklisted,index);
 
 // specific user get
 app.get('/user/:id',getbyId)

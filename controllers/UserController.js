@@ -100,11 +100,6 @@ const isTokenBlacklisted = (req, res, next) => {
   next();
 };
 
-// Protect your routes using both token verification and blacklist check
-const protectedRoute = [isTokenBlacklisted, (req, res) => {
-  res.status(200).json({ message: 'Protected resource accessed' });
-}];
-
 
 module.exports = {
   index,
@@ -114,5 +109,5 @@ module.exports = {
   store,
   login,
   logout,
-  protectedRoute
+  isTokenBlacklisted
 };
