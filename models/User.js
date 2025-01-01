@@ -45,6 +45,23 @@ userSchema.methods.comparePassword = async function(candidatePassword){
     }
 }
 
+const UserSchema = new mongoose.Schema({
+    name: String,
+    email: { type: String, unique: true },
+    password: String,
+    age: Number,
+    resetPasswordToken: String,  // Store the reset token
+    resetPasswordTokenExpiration: Date,  // Store expiration time for the token
+  });
+  
+  // Hash password before saving it (using bcrypt)
+  UserSchema.pre('save', async function(next) {
+    if (this.isModified('password')) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+    next();
+  });
+
 
 const User = mongoose.model('User',userSchema);
 

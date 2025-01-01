@@ -4,7 +4,7 @@ const connectDB = require('./db');
 const User = require('./models/User');
 const passport = require('passport');
 const session = require('express-session'); 
-const {index,getbyId,update,store,destroy, login, logout,isTokenBlacklisted} = require('./controllers/UserController')
+const {index,getbyId,update,store,destroy, login, logout,isTokenBlacklisted,resetPassword,forgotPassword} = require('./controllers/UserController')
 const jwt = require('jsonwebtoken');
 
 
@@ -69,6 +69,11 @@ app.post('/login', login);
 
 app.post('/logout', logout);
 
+// Route to initiate the password reset process
+app.post('/forgot-password', forgotPassword);
+
+// Route to handle resetting the password
+app.post('/reset-password', resetPassword);
 
   
   app.listen(port,()=>{
