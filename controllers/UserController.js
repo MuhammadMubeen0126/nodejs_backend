@@ -2,6 +2,7 @@ const User = require('../models/User')
 const passport = require('../models/passport');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const session = require('express-session');
 const crypto = require('crypto');
 require('dotenv').config();
 
@@ -103,21 +104,23 @@ const isTokenBlacklisted = (req, res, next) => {
   next();
 };
 
-
-// Forgot Password - Step 1: Send email with reset token
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
       return res.status(404).json({ message: 'User with this email does not exist' });
     }
+    req.session._id = user._id;
     return res.status(200).json({ message: user });
 };
 
-// Reset Password - Step 2: Validate token and update password
 const resetPassword = async (req, res) => {
-  const { newPassword } = req.body;
-    return res.status(500).json({ message: 'Error resetting password' });
+   await User.findByIdAndUpdate(req.session._id,{
+    "password":req.body.password,
+  });
+  return res.json({
+    "message":"password updated successfully",
+});
   
 };
 
@@ -131,5 +134,6 @@ module.exports = {
   logout,
   isTokenBlacklisted,
   resetPassword,
-  forgotPassword
+  forgotPassword,
+
 };

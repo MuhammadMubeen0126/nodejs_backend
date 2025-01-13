@@ -51,31 +51,22 @@ connectDB();
 // its gettings all users
 app.get('/users',authenticateJWT,isTokenBlacklisted,index);
 
-// specific user get
 app.get('/user/:id',getbyId)
 
-
-// update post
 app.put('/user/:id',update)
 
-// delete
 app.delete('/user/:id',destroy)
 
-
-// post data
 app.post('/user', store);
 
 app.post('/login', login);
 
 app.post('/logout', logout);
 
-// Route to initiate the password reset process
 app.post('/forgot-password', forgotPassword);
 
-// Route to handle resetting the password
-app.post('/reset-password', resetPassword);
+app.put('/reset-password', resetPassword);
 
-  
   app.listen(port,()=>{
     console.log(port+"is running")
   })
