@@ -1,15 +1,11 @@
 const User = require('../models/User')
 const passport = require('../models/passport');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const session = require('express-session');
-const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
-
-
 const JWT_SECRET = 'your_jwt_secret';
-
 
 const index = async (req,res) => {
     const users = await User.find();
@@ -114,16 +110,38 @@ const forgotPassword = async (req, res) => {
     return res.status(200).json({ message: user });
 };
 
-const resetPassword = async (req, res) => {
-   await User.findByIdAndUpdate(req.session._id,{
-    "password":req.body.password,
-  });
-  return res.json({
-    "message":"password updated successfully",
-});
+// const resetPassword = async (req, res) => {
+//    await User.findByIdAndUpdate(req.session._id,{
+//     "password":req.body.password,
+//   });
+//   return res.json({
+//     "message":"password updated successfully",
+// });
   
-};
+// };
+const resetPassword = async (req, res) => {
+  try {
+    // Get the new password from the request body
+    const { password } = req.body;
 
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the saltRounds value
+
+    // Update the user's password with the hashed password
+    await User.findByIdAndUpdate(req.session._id, {
+      password: hashedPassword,
+    });
+
+    return res.json({
+      message: 'Password updated successfully',
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Error updating password',
+      error: err,
+    });
+  }
+};
 module.exports = {
   index,
   getbyId,
@@ -134,6 +152,5 @@ module.exports = {
   logout,
   isTokenBlacklisted,
   resetPassword,
-  forgotPassword,
-
+  forgotPassword
 };

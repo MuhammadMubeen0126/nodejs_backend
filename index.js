@@ -7,11 +7,8 @@ const session = require('express-session');
 const {index,getbyId,update,store,destroy, login, logout,isTokenBlacklisted,resetPassword,forgotPassword} = require('./controllers/UserController')
 const jwt = require('jsonwebtoken');
 
-
-
 const app = express();
 const port = 5000;
-
 
 app.use(cors());
 app.use(express.json()); 
@@ -24,8 +21,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-
 
 const JWT_SECRET = 'your_jwt_secret';
 
@@ -47,8 +42,6 @@ const authenticateJWT = (req, res, next)=> {
 
 connectDB();
 
-
-// its gettings all users
 app.get('/users',authenticateJWT,isTokenBlacklisted,index);
 
 app.get('/user/:id',getbyId)
@@ -70,8 +63,3 @@ app.put('/reset-password', resetPassword);
   app.listen(port,()=>{
     console.log(port+"is running")
   })
-
-
-  // liIVPrgeQRoUl9Jn
-
-  // ikhlasafzaal13
