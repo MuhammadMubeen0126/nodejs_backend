@@ -106,8 +106,8 @@ const forgotPassword = async (req, res) => {
   if (!user) {
       return res.status(404).json({ message: 'User with this email does not exist' });
     }
-    req.session._id = user._id;
-    return res.status(200).json({ message: user });
+   // req.session._id = user._id;
+    return res.status(200).json({ message: "Successfull" , _id:user._id} );
 };
 
 
@@ -120,7 +120,10 @@ const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the saltRounds value
 
     // Update the user's password with the hashed password
-    await User.findByIdAndUpdate(req.session._id, {
+    // await User.findByIdAndUpdate(req.session._id, {
+    //   password: hashedPassword,
+    // });
+    await User.findByIdAndUpdate(req.body._id, {
       password: hashedPassword,
     });
 
