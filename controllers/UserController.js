@@ -110,15 +110,7 @@ const forgotPassword = async (req, res) => {
     return res.status(200).json({ message: user });
 };
 
-// const resetPassword = async (req, res) => {
-//    await User.findByIdAndUpdate(req.session._id,{
-//     "password":req.body.password,
-//   });
-//   return res.json({
-//     "message":"password updated successfully",
-// });
-  
-// };
+
 const resetPassword = async (req, res) => {
   try {
     // Get the new password from the request body
