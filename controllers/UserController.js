@@ -110,19 +110,13 @@ const forgotPassword = async (req, res) => {
     return res.status(200).json({ message: "Successfull" , _id:user._id} );
 };
 
-
 const resetPassword = async (req, res) => {
   try {
-    // Get the new password from the request body
+   
     const { password } = req.body;
 
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the saltRounds value
+    const hashedPassword = await bcrypt.hash(password, 10); 
 
-    // Update the user's password with the hashed password
-    // await User.findByIdAndUpdate(req.session._id, {
-    //   password: hashedPassword,
-    // });
     await User.findByIdAndUpdate(req.body._id, {
       password: hashedPassword,
     });
