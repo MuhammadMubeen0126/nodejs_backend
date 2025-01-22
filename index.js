@@ -6,10 +6,10 @@ const passport = require('passport');
 const session = require('express-session'); 
 const {index,getbyId,update,store,destroy, login, logout,isTokenBlacklisted,resetPassword,forgotPassword} = require('./controllers/UserController')
 const jwt = require('jsonwebtoken');
-
+const { sendEmail } = require('./services/emailService');
 const app = express();
 const port = 5000;
-
+require('dotenv').config();
 app.use(cors());
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
@@ -21,6 +21,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 const JWT_SECRET = 'your_jwt_secret';
 
@@ -59,6 +60,30 @@ app.post('/logout', logout);
 app.post('/forgot-password', forgotPassword);
 
 app.put('/reset-password', resetPassword);
+
+app.post('/send-mail', (req, res) => {
+  const mailData = {
+    to: req.body.to,
+    subject: req.body.subject,
+    message: req.body.message
+  };
+
+  sendEmail(mailData)
+    .then(info => {
+      res.json({
+        message: `Message sent: ${info.messageId}`,
+        info: info
+      });
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: 'Error sending email',
+        error: error.message
+      });
+    });
+});
+
+
 
   app.listen(port,()=>{
     console.log(port+"is running")

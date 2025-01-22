@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    verify: {
+        type: Boolean,
+        default: false
+    },
 })
 
 userSchema.pre('save', async function(next){
