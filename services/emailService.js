@@ -8,7 +8,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS   // Email password or app-specific password
   }
 });
-
 /**
  * Send email
  * @param {Object} mailData - Email data containing recipient, subject, and message.
@@ -31,5 +30,4 @@ function sendEmail(mailData) {
     });
   });
 }
-
-module.exports = { sendEmail };
+module.exports =  sendEmail ;

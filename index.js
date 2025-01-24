@@ -22,7 +22,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 const JWT_SECRET = 'your_jwt_secret';
 
 const authenticateJWT = (req, res, next)=> {
@@ -40,7 +39,6 @@ const authenticateJWT = (req, res, next)=> {
     next();
   })
 }
-
 connectDB();
 
 app.get('/users',authenticateJWT,isTokenBlacklisted,index);
@@ -60,29 +58,6 @@ app.post('/logout', logout);
 app.post('/forgot-password', forgotPassword);
 
 app.put('/reset-password', resetPassword);
-
-app.post('/send-mail', (req, res) => {
-  const mailData = {
-    to: req.body.to,
-    subject: req.body.subject,
-    message: req.body.message
-  };
-
-  sendEmail(mailData)
-    .then(info => {
-      res.json({
-        message: `Message sent: ${info.messageId}`,
-        info: info
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        message: 'Error sending email',
-        error: error.message
-      });
-    });
-});
-
 
 
   app.listen(port,()=>{
