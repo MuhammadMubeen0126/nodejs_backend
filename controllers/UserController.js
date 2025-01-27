@@ -136,7 +136,7 @@ const forgotPassword = async (req, res) => {
   await user.save();
 
   // Send reset email
-  const resetLink = `http://localhost:5000/reset-password/${resetToken}`;
+  const resetLink = `http://localhost:3000/resetpassword/${resetToken}`;
   const mailData = {
     to: user.email,
     subject: 'Password Reset Request',
@@ -154,7 +154,7 @@ const forgotPassword = async (req, res) => {
 // ✅ Reset Password
 const resetPassword = async (req, res) => {
   try {
-    const {token} = req.params;
+    const {token} = req.body;
     const { password } = req.body;
 
     // Find user by reset token
