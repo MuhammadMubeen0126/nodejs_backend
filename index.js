@@ -57,7 +57,7 @@ app.post('/logout', logout);
 
 app.post('/forgot-password', forgotPassword);
 
-app.put('/reset-password', resetPassword);
+app.put('/reset-password/:token', resetPassword);
 
 
   app.listen(port,()=>{

@@ -136,7 +136,7 @@ const forgotPassword = async (req, res) => {
   await user.save();
 
   // Send reset email
-  const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+  const resetLink = `http://localhost:5000/reset-password/${resetToken}`;
   const mailData = {
     to: user.email,
     subject: 'Password Reset Request',
@@ -154,7 +154,8 @@ const forgotPassword = async (req, res) => {
 // ✅ Reset Password
 const resetPassword = async (req, res) => {
   try {
-    const { token, password } = req.body;
+    const {token} = req.params;
+    const { password } = req.body;
 
     // Find user by reset token
     const user = await User.findOne({
@@ -168,10 +169,11 @@ const resetPassword = async (req, res) => {
 
     // Hash new password
     const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-    await user.save();
+    await User.findByIdAndUpdate(user._id, {
+      password: hashedPassword,
+      resetPasswordToken: undefined,
+      resetPasswordExpires: undefined
+    });
 
     return res.json({ message: 'Password updated successfully' });
   } catch (err) {
