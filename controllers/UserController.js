@@ -1,15 +1,21 @@
+const express = require('express');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+const dotenv = require('dotenv');
 const User = require('../models/User');
 const passport = require('../models/passport');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const { OAuth2Client } = require('google-auth-library');
 
+dotenv.config();
+
+const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// ✅ Nodemailer Transporter
+// Nodemailer Transporter
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -18,9 +24,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-/**
- * ✅ Send Email Function
- */
+// Send Email Function
 function sendEmail(mailData) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -39,19 +43,19 @@ function sendEmail(mailData) {
   });
 }
 
-// ✅ Get all users
+// Get all users
 const index = async (req, res) => {
   const users = await User.find();
   return res.json(users);
 };
 
-// ✅ Get user by ID
+// Get user by ID
 const getbyId = async (req, res) => {
   const user = await User.findById(req.params.id);
   return res.json(user);
 };
 
-// ✅ Update user
+// Update user
 const update = async (req, res) => {
   const user = await User.findByIdAndUpdate(req.params.id, {
     name: req.body.name,
@@ -61,13 +65,13 @@ const update = async (req, res) => {
   return res.json(user);
 };
 
-// ✅ Delete user
+// Delete user
 const destroy = async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   return res.json({ message: "Deleted successfully" });
 };
 
-// ✅ Store new user
+// Store new user
 const store = async (req, res) => {
   try {
     const newUser = new User({
@@ -84,7 +88,7 @@ const store = async (req, res) => {
   }
 };
 
-// ✅ Login user
+// Login user
 const login = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) return next(err);
@@ -97,7 +101,7 @@ const login = (req, res, next) => {
   })(req, res, next);
 };
 
-// ✅ Token Blacklist
+// Token Blacklist
 const tokenBlacklist = new Set();
 
 const logout = (req, res) => {
@@ -108,7 +112,7 @@ const logout = (req, res) => {
   return res.status(200).json({ message: 'Logout successful' });
 };
 
-// ✅ Middleware to check token blacklist
+// Middleware to check token blacklist
 const isTokenBlacklisted = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (tokenBlacklist.has(token)) {
@@ -117,7 +121,7 @@ const isTokenBlacklisted = (req, res, next) => {
   next();
 };
 
-// ✅ Forgot Password
+// Forgot Password
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -144,17 +148,17 @@ const forgotPassword = async (req, res) => {
   };
 
   try {
-    await sendEmail(mailData);  // ✅ Fixed function name here
+    await sendEmail(mailData);
     return res.status(200).json({ message: 'Password reset email sent successfully.' });
   } catch (error) {
     return res.status(500).json({ message: 'Error sending email', error: error.message });
   }
 };
 
-// ✅ Reset Password
+// Reset Password
 const resetPassword = async (req, res) => {
   try {
-    const {token} = req.body;
+    const { token } = req.body;
     const { password } = req.body;
 
     // Find user by reset token
@@ -181,7 +185,7 @@ const resetPassword = async (req, res) => {
   }
 };
 
-// ✅ Send General Email
+// Send General Email
 const sendMail = async (req, res) => {
   const mailData = {
     to: req.body.to,
@@ -197,7 +201,26 @@ const sendMail = async (req, res) => {
   }
 };
 
-// ✅ Exporting functions
+// Google Authentication
+app.post('/auth/google', async (req, res) => {
+  const { token } = req.body;
+  const ticket = await client.verifyIdToken({ idToken: token, audience: process.env.GOOGLE_CLIENT_ID });
+  const { name, email } = ticket.getPayload();
+
+  // Check if user exists in DB, else create a new user
+  let user = await User.findOne({ email });
+  if (!user) {
+    user = new User({ name, email });
+    await user.save();
+  }
+
+  // Generate JWT Token
+  const jwtToken = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+
+  return res.status(200).json({ message: 'Google authentication successful', token: jwtToken });
+});
+
+// Exporting functions
 module.exports = {
   index,
   getbyId,
