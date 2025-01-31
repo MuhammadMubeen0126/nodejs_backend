@@ -4,7 +4,7 @@ const connectDB = require('./db');
 const User = require('./models/User');
 const passport = require('passport');
 const session = require('express-session'); 
-const {index,getbyId,update,store,destroy, login, logout,isTokenBlacklisted,resetPassword,forgotPassword} = require('./controllers/UserController')
+const {index,getbyId,update,store,destroy, login, logout,isTokenBlacklisted,resetPassword,forgotPassword,googleRegister} = require('./controllers/UserController')
 const jwt = require('jsonwebtoken');
 const { sendEmail } = require('./services/emailService');
 const app = express();
@@ -60,7 +60,8 @@ app.post('/forgot-password', forgotPassword);
 app.put('/reset-password/:token', resetPassword);
 
 
-
+// Google Authentication
+app.post('/auth/google',googleRegister );
 
   app.listen(port,()=>{
     console.log(port+"is running")

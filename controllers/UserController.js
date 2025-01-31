@@ -201,24 +201,19 @@ const sendMail = async (req, res) => {
   }
 };
 
-// Google Authentication
-app.post('/auth/google', async (req, res) => {
-  const { token } = req.body;
-  const ticket = await client.verifyIdToken({ idToken: token, audience: process.env.GOOGLE_CLIENT_ID });
-  const { name, email } = ticket.getPayload();
+const googleRegister = async (req, res) => {
 
-  // Check if user exists in DB, else create a new user
-  let user = await User.findOne({ email });
-  if (!user) {
-    user = new User({ name, email });
-    await user.save();
-  }
+   const newUser = new User({
+      name: req.body.given_name,
+      email:req.body.email,
+      password: req.body.email,
+      age:0
+  });
 
-  // Generate JWT Token
-  const jwtToken = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+  const savedUser = await newUser.save();
 
-  return res.status(200).json({ message: 'Google authentication successful', token: jwtToken });
-});
+  return res.status(200).json({ message: savedUser});
+}
 
 // Exporting functions
 module.exports = {
@@ -232,5 +227,6 @@ module.exports = {
   isTokenBlacklisted,
   forgotPassword,
   resetPassword,
-  sendMail
+  sendMail,
+  googleRegister
 };
