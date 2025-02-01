@@ -12,7 +12,8 @@ const { OAuth2Client } = require('google-auth-library');
 dotenv.config();
 
 const app = express();
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+
+const JWT_SECRET = 'your_jwt_secret';
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Nodemailer Transporter
@@ -43,7 +44,7 @@ function sendEmail(mailData) {
   });
 }
 
-// Get all users
+// Get all users// ✅ Get all users
 const index = async (req, res) => {
   const users = await User.find();
   return res.json(users);
@@ -202,6 +203,15 @@ const sendMail = async (req, res) => {
 };
 
 const googleRegister = async (req, res) => {
+  const { email } = req.body;
+  let user = await User.findOne({ email });
+
+  if (user) {
+    // If user exists, generate a token and log them in
+    const token = jwt.sign({ id: req.body._id, email: req.body.email }, JWT_SECRET, { expiresIn: "1h" });
+
+    return res.status(200).json({ message: "User logged in", user, token });
+  }
 
    const newUser = new User({
       name: req.body.given_name,
@@ -209,10 +219,10 @@ const googleRegister = async (req, res) => {
       password: req.body.email,
       age:0
   });
-
+  const token = jwt.sign({ id: req.body._id, email: req.body.email }, JWT_SECRET, { expiresIn: '1h' });
   const savedUser = await newUser.save();
 
-  return res.status(200).json({ message: savedUser});
+  return res.status(200).json({ message: savedUser, token });
 }
 
 // Exporting functions
