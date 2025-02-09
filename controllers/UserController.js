@@ -216,8 +216,9 @@ const googleRegister = async (req, res) => {
    const newUser = new User({
       name: req.body.given_name,
       email:req.body.email,
-      password: req.body.email,
+      password: req.body.sub,
       age:0
+    
   });
   const token = jwt.sign({ id: req.body._id, email: req.body.email }, JWT_SECRET, { expiresIn: '1h' });
   const savedUser = await newUser.save();
