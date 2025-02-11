@@ -7,7 +7,7 @@ const session = require('express-session');
 // Import User Controller
 const {index,getbyId,update,store,destroy, login, logout,isTokenBlacklisted,resetPassword,forgotPassword,googleRegister} = require('./controllers/UserController')
 // Import Room Controller
-const {createRoom,getAllRooms,updateRoomStatus,bookRoom,checkInGuest,checkOutGuest,} = require('../controllers/roomController');
+// const {createRoom,getAllRooms,updateRoomStatus,bookRoom,checkInGuest,checkOutGuest,} = require('../controllers/roomController');
 const jwt = require('jsonwebtoken');
 const { sendEmail } = require('./services/emailService');
 const app = express();
